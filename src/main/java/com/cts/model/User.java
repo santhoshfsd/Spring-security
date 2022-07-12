@@ -1,4 +1,4 @@
-package com.javainuse.model;
+package com.cts.model;
 
 import javax.persistence.*;
 

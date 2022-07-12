@@ -1,8 +1,8 @@
-package com.javainuse.service;
+package com.cts.service;
 
 import java.util.ArrayList;
 
-import com.javainuse.repository.UserRepository;
+import com.cts.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	private UserRepository userRepository;
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		com.javainuse.model.User user = userRepository.findByUsername(username);
+		com.cts.model.User user = userRepository.findByUsername(username);
 		if (user != null) {
 			return new User(user.getUsername(), user.getPassword(),
 					new ArrayList<>());

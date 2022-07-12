@@ -1,4 +1,4 @@
-package com.javainuse.controller;
+package com.cts.controller;
 
 import java.util.Objects;
 
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.javainuse.config.JwtTokenUtil;
-import com.javainuse.model.JwtRequest;
-import com.javainuse.model.JwtResponse;
+import com.cts.config.JwtTokenUtil;
+import com.cts.model.LoginRequest;
+import com.cts.model.TokenResponse;
 
 @RestController
 @CrossOrigin
-public class JwtAuthenticationController {
+public class AuthenticationController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -31,20 +31,20 @@ public class JwtAuthenticationController {
 	private JwtTokenUtil jwtTokenUtil;
 
 	@Autowired
-	private UserDetailsService jwtInMemoryUserDetailsService;
+	private UserDetailsService userDetailsService;
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest authenticationRequest)
 			throws Exception {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-		final UserDetails userDetails = jwtInMemoryUserDetailsService
+		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new JwtResponse(token));
+		return ResponseEntity.ok(new TokenResponse(token));
 	}
 
 	private void authenticate(String username, String password) throws Exception {

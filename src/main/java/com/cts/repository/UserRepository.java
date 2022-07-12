@@ -1,6 +1,6 @@
-package com.javainuse.repository;
+package com.cts.repository;
 
-import com.javainuse.model.User;
+import com.cts.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
