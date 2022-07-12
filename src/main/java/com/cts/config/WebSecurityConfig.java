@@ -63,7 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this example
         httpSecurity
 				.csrf().disable()
-				.authorizeRequests().antMatchers("/authenticate","/dashboard","/register")
+                .cors().and()
+				.authorizeRequests().antMatchers("/authenticate","/register")
 				.permitAll()
 				.anyRequest().authenticated()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

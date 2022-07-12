@@ -36,7 +36,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
         // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
 
-        String[] ignoredUrl = {"/authenticate", "/register", "/dashboard"};
+        String[] ignoredUrl = {"/authenticate", "/register" };
 
       if (Arrays.stream(ignoredUrl).anyMatch(url -> url.equals(request.getServletPath()))) {
             chain.doFilter(request, response);

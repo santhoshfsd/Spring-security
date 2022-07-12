@@ -1,5 +1,7 @@
 package com.cts.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.cts.model.User;
@@ -47,10 +49,16 @@ public class AuthenticationController {
 
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
-
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new TokenResponse(token));
+		User user = userRepository.findByUsername(authenticationRequest.getUsername());
+		TokenResponse response = new TokenResponse();
+		response.setToken(token);
+		Map<String, String> userDetailsResponse = new HashMap<>();
+		userDetailsResponse.put("username",user.getUsername());
+		userDetailsResponse.put("email",user.getEmail());
+		response.setUserDetails(userDetailsResponse);
+		return ResponseEntity.ok(response);
 	}
 
 	private void authenticate(String username, String password) throws Exception {
@@ -71,10 +79,23 @@ public class AuthenticationController {
 
 	@PostMapping("/register")
 	public ResponseEntity registerUser(@RequestBody UserDto userDto) {
-		User user = new User();
-		BeanUtils.copyProperties(userDto, user);
-		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-		User persistedUser = userRepository.save(user);
-		return ResponseEntity.status(201).body("user registered" +persistedUser.getId());
+		User existingUser = userRepository.findByUsername(userDto.getUsername());
+		String message = null;
+		Integer status = null;
+		if(existingUser == null) {
+			User user = new User();
+			BeanUtils.copyProperties(userDto, user);
+			user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+			User persistedUser = userRepository.save(user);
+			message = "User Created Successfully";
+			status = 201;
+		} else {
+			message = "User Already registered";
+			status = 500;
+		}
+		Map response = new HashMap<>();
+		response.put("message", message);
+		response.put("status", status);
+			return ResponseEntity.status(status).body(response);
 	}
 }
