@@ -2,6 +2,10 @@ package com.cts.controller;
 
 import java.util.Objects;
 
+import com.cts.model.User;
+import com.cts.model.UserDto;
+import com.cts.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,18 +14,14 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import com.cts.config.JwtTokenUtil;
 import com.cts.model.LoginRequest;
 import com.cts.model.TokenResponse;
 
 @RestController
-@CrossOrigin
 public class AuthenticationController {
 
 	@Autowired
@@ -29,6 +29,12 @@ public class AuthenticationController {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -61,5 +67,14 @@ public class AuthenticationController {
 		catch (Exception e) {
 			throw new Exception("Unknown exception", e);
 		}
+	}
+
+	@PostMapping("/register")
+	public ResponseEntity registerUser(@RequestBody UserDto userDto) {
+		User user = new User();
+		BeanUtils.copyProperties(userDto, user);
+		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		User persistedUser = userRepository.save(user);
+		return ResponseEntity.status(201).body("user registered" +persistedUser.getId());
 	}
 }
